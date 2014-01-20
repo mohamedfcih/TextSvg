@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+<input type="text" id="textInput"><span>The text You want to display</span><button id="submit">Submit</button>
+<div id="svg"></div>
+
+<script src="./d3.v3.js" charset="utf-8"></script>
+<script src="./jquery-1.10.2.js" charset="utf-8"></script>
+<script>
+function drawSvg(config){
+  //set default config
+  var width=config.width,
+      height=config.height,
+      offset_width=config.offset_width,
+      offset_height=config.offset_height,
+      side=config.side,
+      s=config.s;
+  // var s=[[-7,4,0],[-7,0,0],[-7,-2,0],[-7,-4,0],[0,0,1],[-2,0,1],[-4,0,1],[0,2,1],[0,4,1],[0,-2,1],[0,-4,1],[-4,-2,1],[-4,-4,1],[-2,-4,1],[3,4,2],[3,2,2],[3,0,2],[3,-2,2],[3,-4,2],[5,-4,2]],
+  i=["i","d","l"],
+  c=25,l=-200*side/4,p=side/2,o=1,u=7*p+2*c,d=5*p+2*c,
+  v=Math.round(c+3.5*p),h=Math.round(c+2*p),g=s.length,y=s.slice();
+  // t.select(e).select("img").style("opacity",.1);
+  var color = d3.scale.category10();
+
+  var x=d3.select("#svg").append("svg").attr("width",width).attr("height",height),
+      b=x.append("g").attr("transform","translate("+offset_width+","+offset_height+")"),
+      w=b.selectAll("rect").data(y).enter().append("rect")
+      // .attr("class",function(t){return"logo-"+i[t[2]]})
+      .attr("x",function(t){return t.x=Math.round(t[0]/2*p)})
+      .attr("y",function(t){return t.y=Math.round(t[1]/2*-p)}) 
+      .attr("width",side).attr("height",side).style("fill", function(d, i) {return color(i%10) })//return color(i%10) });
+      y.push.apply(y,y.map(a));
+      y.unshift(a({x:1e4,y:1e4}));
+      
+  var k=d3.range(g).map(function(t){return{source:t+1,target:t+g+1}});
+  var A=d3.layout.force().gravity(0).charge(function(t,e){return e?0:l})
+      .linkDistance(.1).nodes(y).links(k).start()
+      .on("tick",function(){
+        for(var e=0,a=d3.geom.quadtree(y);g>e;++e){
+          a.visit(m(y[e+1]));
+        }
+            
+        w.attr("x",function(t){return Math.round(t.x)}).attr("y",function(t){return Math.round(t.y)})
+      });
+  x.on("mousemove",n).on("touchmove",n).on("mouseout",r).on("touchend",r);
+
+  function m(node) {
+  var r = node.width+16,
+      nx1 = node.x - r,
+      nx2 = node.x + r,
+      ny1 = node.y - r,
+      ny2 = node.y + r;
+  return function(quad, x1, y1, x2, y2) {
+    // console.log(quad);
+    if (quad.point && (quad.point !== node)) {
+      var x = node.x - quad.point.x,
+          y = node.y - quad.point.y,
+          l = Math.sqrt(x * x + y * y),
+          r = node.width + quad.point.width;
+      if (l < r) {
+        l = (l - r) / l * .5;
+        node.x -= x *= l;
+        node.y -= y *= l;
+        quad.point.x += x;
+        quad.point.y += y;
+      }
+    }
+    return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+  };
+}
+
+  function a(t){return{x:t.x,y:t.y,fixed:!0,radius:0}}
+  function n(){var e=d3.mouse(this);y[0].px=e[0]-offset_width,y[0].py=e[1]-offset_height,A.resume()}
+  function r(){y[0].px=y[0].py=1e4,A.resume()}
+}
+
+
+
+</script>
+<script>
+  var dict={
+              "A":[[0,0],[5,0],[10,0],[0,-5],[10,-5],[0,-10],[5,-10],[10,-10],[0,-15],[10,-15],[0,-20],[10,-20]],
+              "B":[[0,0],[5,0],[10,0],[0,-5],[10,-5],[0,-10],[5,-10],[10,-10],[0,-15],[10,-15],[0,-20],[5,-20],[10,-20]],
+              "C":[[0,0],[10,0],[5,0],[10,-5],[0,-5],[0,-10],[0,-15],[10,-15],[0,-20],[5,-20],[10,-20]],
+              "D":[[0,0],[5,0],[0,-5],[10,-5],[0,-10],[10,-10],[0,-15],[10,-15],[0,-20],[5,-20]],
+              "E":[[0,0],[5,0],[10,0],[0,-5],[0,-10],[5,-10],[10,-10],[0,-15],[0,-20],[5,-20],[10,-20]],
+              "F":[[0,0],[5,0],[10,0],[0,-5],[0,-10],[5,-10],[10,-10],[0,-15],[0,-20]],
+              "I":[[0,0],[5,0],[10,0],[5,-5],[5,-10],[5,-15],[0,-20],[5,-20],[10,-20]],
+              "L":[[0,0],[0,-5],[0,-10],[0,-15],[0,-20],[5,-20],[10,-20]],
+              "O":[[0,0],[5,0],[10,0],[0,-5],[10,-5],[0,-10],[10,-10],[0,-15],[10,-15],[0,-20],[5,-20],[10,-20]],
+              "J":[[0,0],[5,0],[10,0],[5,-5],[5,-10],[5,-15],[5,-20],[0,-20]],
+              "K":[[0,0],[0,-5],[0,-10],[0,-15],[0,-20],[10,0],[5,-10],[10,-20],[7.5,-5],[7.5,-15]],
+              "P":[[0,0],[5,0],[10,0],[0,-5],[10,-5],[0,-10],[5,-10],[10,-10],[0,-15],[0,-20]],
+              "S":[[0,0],[5,0],[10,0],[0,-5],[0,-10],[5,-10],[10,-10],[10,-15],[0,-20],[5,-20],[10,-20]],
+              "T":[[0,0],[5,0],[10,0],[5,-5],[5,-10],[5,-15],[5,-20]],
+              "U":[[0,0],[10,0],[0,-5],[10,-5],[0,-10],[10,-10],[0,-15],[10,-15],[0,-20],[5,-20],[10,-20]],
+              "Y":[[0,0],[10,0],[0,-5],[10,-5],[0,-10],[5,-10],[10,-10],[5,-15],[5,-20]],
+              "G":[[0,0],[5,0],[10,0],[0,-5],[0,-10],[0,-15],[0,-20],[5,-20],[10,-20],[10,-15],[7.5,-10],[12.5,-10]],
+              "M":[[0,0],[5,0],[15,0],[20,0],[0,-5],[20,-5],[0,-10],[10,-10],[20,-10],[0,-15],[20,-15],[0,-20],[20,-20],[7.5,-5],[12.5,-5]],
+              "N":[[0,0],[5,0],[20,0],[0,-5],[20,-5],[0,-10],[10,-10],[20,-10],[0,-15],[20,-15],[0,-20],[20,-20],[7.5,-5],[12.5,-15],[15,-20]],
+              "Z":[[0,0],[5,0],[10,0],[5,-10],[0,-20],[5,-20],[10,-20],[7.5,-5],[2.5,-15]],
+              "Q":[[0,0],[5,0],[10,0],[0,-5],[10,-5],[0,-10],[10,-10],[0,-15],[10,-15],[0,-20],[5,-20],[10,-20],[15,-20]],
+              "R":[[0,0],[5,0],[10,0],[0,-5],[10,-5],[0,-10],[5,-10],[10,-10],[0,-15],[0,-20],[10,-20],[7.5,-15]],
+              "H":[[0,0],[10,0],[0,-5],[10,-5],[0,-10],[5,-10],[10,-10],[0,-15],[10,-15],[0,-20],[10,-20]],
+              "V":[[0,0],[20,0],[5,-10],[15,-10],[10,-20],[2.5,-5],[17.5,-5],[7.5,-15],[12.5,-15]],
+              "X":[[0,0],[5,0],[15,0],[20,0],[5,-5],[15,-5],[10,-10],[5,-15],[15,-15],[0,-20],[5,-20],[15,-20],[20,-20]],
+              "W":[[0,0],[2,-5],[3.5,-10],[5,-15],[7.5,-20],[10,-15],[12.5,-10],[15,-5],[17.5,-10],[20,-15],[22.5,-20],[25,-15],[26.5,-10],[28,-5],[30,0]]
+           },
+    regx=/^[a-zA-Z. ]+$/;
+  $("#submit").on("click",function(){
+    if($("#textInput").val()){
+      if(regx.test($("#textInput").val())){
+        $("#svg").empty();
+        var text=$("#textInput").val().toUpperCase();
+
+        var resultArray=pushText(text,dict);
+
+        var config={width:1170,height:800,offset_width:50,offset_height:200,side:10,s:resultArray};
+        
+        drawSvg(config);
+      }
+      else{
+        alert("Sorry,We only support letters!Please tap letters.");
+      }
+    } 
+    else{
+      alert("Please,Input something at least !");
+    }
+  });
+
+  var text="HELLO WORLD";
+
+  var resultArray=pushText(text,dict);
+
+  var config={width:1170,height:800,offset_width:50,offset_height:200,side:10,s:resultArray};
+  
+  drawSvg(config);
+
+  function pushText(text,dict){
+    var resultArray=[],currentArray=null;
+    var max=[0,0];
+    for(var i=0;i<text.length;i++){
+      var letter=text.charAt(i);
+      if(letter!=" "){
+        currentArray=dict[letter].slice(0);
+        var length=currentArray.length;
+        for(var j=0;j<length;j++){
+          temp=currentArray[j].slice(0);
+          temp[0]=temp[0]+max[0]+10;
+          resultArray.push(temp);
+          if(temp[0]>max[1]){
+            max[1]=temp[0];
+          }
+        }
+        max[0]=max[1];
+        max[1]=0;
+      }
+      else{
+        max[0]+=10;
+        max[1]=0;
+      }
+    }
+    return resultArray;
+  }
+</script>
